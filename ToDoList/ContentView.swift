@@ -6,9 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     @State private var showNewTask = false
+    // load all ToDoItem objects into an array to be automatically updated once user adds more tasks
+    @Query var toDos: [ToDoItem]
     
     var body: some View {
         VStack {
@@ -30,15 +33,24 @@ struct ContentView: View {
             }.padding()
             Spacer()
             
+            List {
+                ForEach(toDos) { toDoItem in
+                    if toDoItem.isImportant {
+                        Text("‼️ \(toDoItem.title)")
+                    }
+                    else {
+                        Text(toDoItem.title)
+                    }
+                }
+            }
         }
         if showNewTask {
-            
-                NewToDoView()
-            
+            NewToDoView(showNewTask: $showNewTask, toDoItem: ToDoItem(title: "", isImportant: false))
         }
     }
 }
 
 #Preview {
     ContentView()
+        .modelContainer(for: ToDoItem.self, inMemory: true)
 }
